@@ -20,6 +20,8 @@ def getProblem(file):
 
 def canReceiveGift(gift,child):
     #TODO: Fill in logic for not enough gifts left + avg gifts per kid
+    return True
+
     if gift.ages == "any":
         #print("true")
         return True
@@ -55,16 +57,22 @@ class Gifts:
         return "name: " + self.name + " price: " + self.price + " size: " + self.size + " ages: " + self.ages
 
 class Node: #TODO: make it so entry is two variables
-    hist = []
-    def __init__(self,gift,child,prev = []):#,entry,prev = []):
-        self.hist.append((gift,child))
-        if prev != []:
-            for i in prev:
-                self.hist.append(i)
+    #hist = {}
+    def __init__(self,gift,child,prev):#,entry,prev = []):
+        if prev != {}:
+            self.hist = prev
+        else:
+            self.hist = {}
+        if child.name in self.hist:
+            self.hist[child.name].append(gift)
+        else:
+            self.hist[child.name] = [gift]
     def __str__(self):
         s = ""
-        for i in self.hist:
-            s += str(i[0]) + str(i[1]) + "\n"
+        for key,values in self.hist.items():
+            s += str(key) + "\n"
+            for i in values:
+                s += "-" + str(i) + "\n"
         return s
 def main():
     print("start")
@@ -73,6 +81,8 @@ def main():
     (children,gifts) = getProblem(filename)
     print(children[0])
     print(gifts[0])
+    print(len(children))
+    print(len(gifts))
     print(canReceiveGift(gifts[0],children[0]))
 
     #bad implementation attempt
@@ -81,24 +91,34 @@ def main():
     nodes = []
     for c in children:
         if canReceiveGift(gifts[0],c):
-            nodes.append(Node(gifts[0],c))
-    print(nodes[0])
+            nodes.append(Node(gifts[0],c,{}))
+    for i in nodes:
+        print(i)
     for g in gifts[1:]:
         #print(g)
         newNodes = []
+        print(len(nodes),"###############")
+        for i in nodes:
+            print(i)
+        if len(nodes) == 9:
+            break
         for n in nodes:
             for c in children:
                 #print(c)
                 if canReceiveGift(g,c):
-                    newNodes.append(Node((g,c),n.hist))
+                    #newNodes.append(Node((g,c),n.hist))
+                    newNodes.append(Node(g,c,n.hist))
                     #print("added node")
         #print(nodes)
         #print(newNodes)
         nodes = newNodes
 
-    print(nodes)
-    print(len(nodes))
-    print(nodes[0].hist)
+    print(nodes[0])
+    #print(len(nodes))
+    #print(nodes[0].hist)
+    #print(len(nodes[0].hist))
+    #print(nodes[1].hist[1][0],"\n",nodes[1].hist[0][1])
+    
 
     print("end")
 
