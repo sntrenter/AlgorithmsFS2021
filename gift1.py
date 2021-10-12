@@ -20,8 +20,6 @@ def getProblem(file):
     return (children,gifts)
 
 
-
-
 class Children:
     def __init__(self,name,age):
         self.name = name
