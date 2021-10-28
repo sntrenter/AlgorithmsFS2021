@@ -58,7 +58,7 @@ public:
     Node(Gift g, Child c, multimap<string, Gift> prev)
     {
         dist = prev;
-        dist.insert({c.name,g});
+        dist.insert({c.name, g});
     }
     void print()
     {
@@ -66,7 +66,7 @@ public:
              iter != dist.end(); ++iter)
         {
             Gift g = iter->second;
-            cout << iter->first << "|||" ;
+            cout << iter->first << "|||";
             g.print();
         }
     }
@@ -76,6 +76,8 @@ list<Child> children = {};
 list<Child>::iterator cit = children.begin();
 list<Gift> gifts = {};
 list<Gift>::iterator git = gifts.begin();
+list<Node> nodes = {};
+list<Node>::iterator nit = nodes.begin();
 
 void getProblem(string filename)
 {
@@ -123,12 +125,11 @@ void getProblem(string filename)
     }
 }
 
-void distGifts()
-{
-}
+
 
 bool canRecieveGift(Gift g, Child c)
 {
+    //return true;
     if (g.any || (c.age > g.ageLower && c.age < g.ageHigher))
     {
         //c.print();
@@ -145,6 +146,60 @@ bool canRecieveGift(Gift g, Child c)
     return false;
 }
 
+void distGifts()
+{
+
+    //for (auto c : children)
+    //{
+    //    c.print();
+    //}
+    //Fill in first layer
+    Gift firstGift = gifts.front();
+    gifts.pop_front();
+    for (auto c : children)
+    {
+        if (canRecieveGift(firstGift,c))
+        {
+            multimap<string,Gift> emptymap;
+            Node n = Node(firstGift,c,emptymap);
+            nodes.insert(nit,n);
+        }
+    }
+    //move through the rest of the layers
+    for (auto g : gifts)
+    {
+        list<Node> newNodes = {};
+        list<Node>::iterator nNit = newNodes.begin();
+        for (auto n : nodes)
+        {
+            for (auto c : children)
+            {
+                if(canRecieveGift(g,c))
+                {
+                    multimap<string,Gift> newMap = n.dist;
+                    Node n = Node(g,c,newMap);
+                    newNodes.insert(nNit,n);
+                }
+            }
+        }
+        nodes.swap(newNodes);
+        nit = nodes.begin();
+        newNodes.clear();
+        nNit = newNodes.begin();
+        cout << nodes.size() << endl;
+        
+    }
+    //print nodes
+    cout << "##########" << endl;
+    for (auto n : nodes)
+    {
+        n.print();
+        cout << "##########" << endl;
+    }
+
+
+}
+
 int main()
 {
     Child c1 = Child("c1", 10);
@@ -158,20 +213,18 @@ int main()
     //canRecieveGift(g3, c2);
     //canRecieveGift(g3, c3);
 
-    Node n1 = Node(g1,c1,{});
-    n1.print();
-    cout << "##############################" << endl;
-    Node n2 = Node(g2,c2,n1.dist);
-    n2.print();
-    cout << "##############################" << endl;
-    Node n3 = Node(g3,c3,n2.dist);
-    n3.print();
-    cout << "##############################" << endl;
-    Node n4 = Node(g1,c3,n3.dist);
-    n4.print();
-    cout << "##############################" << endl;
-
-
+    //Node n1 = Node(g1,c1,{});
+    //n1.print();
+    //cout << "##############################" << endl;
+    //Node n2 = Node(g2,c2,n1.dist);
+    //n2.print();
+    //cout << "##############################" << endl;
+    //Node n3 = Node(g3,c3,n2.dist);
+    //n3.print();
+    //cout << "##############################" << endl;
+    //Node n4 = Node(g1,c3,n3.dist);
+    //n4.print();
+    //cout << "##############################" << endl;
 
     cout << "Start\n";
     getProblem("ex1_3child_6gifts");
