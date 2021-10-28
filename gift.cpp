@@ -65,9 +65,6 @@ public:
         for (multimap<string, Gift, less<string>>::const_iterator iter = dist.begin();
              iter != dist.end(); ++iter)
         {
-            //cout << iter->first << '\t' << iter->second << '\n';
-            //cout << "##############################" << endl;
-            //Child c = iter->first;
             Gift g = iter->second;
             cout << iter->first << "|||" ;
             g.print();
