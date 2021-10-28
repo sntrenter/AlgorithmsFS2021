@@ -2,6 +2,7 @@
 #include <list>
 #include <fstream>
 #include <regex>
+#include <map>
 using namespace std;
 
 class Child
@@ -53,7 +54,25 @@ public:
 class Node
 {
 public:
-    string name = "Test";
+    multimap<string, Gift> dist;
+    Node(Gift g, Child c, multimap<string, Gift> prev)
+    {
+        dist = prev;
+        dist.insert({c.name,g});
+    }
+    void print()
+    {
+        for (multimap<string, Gift, less<string>>::const_iterator iter = dist.begin();
+             iter != dist.end(); ++iter)
+        {
+            //cout << iter->first << '\t' << iter->second << '\n';
+            //cout << "##############################" << endl;
+            //Child c = iter->first;
+            Gift g = iter->second;
+            cout << iter->first << "|||" ;
+            g.print();
+        }
+    }
 };
 
 list<Child> children = {};
@@ -107,10 +126,59 @@ void getProblem(string filename)
     }
 }
 
+void distGifts()
+{
+}
+
+bool canRecieveGift(Gift g, Child c)
+{
+    if (g.any || (c.age > g.ageLower && c.age < g.ageHigher))
+    {
+        //c.print();
+        //cout << "can recieve" << endl;
+        //g.print();
+        //cout << "###########################" << endl;
+        return true;
+    }
+
+    //c.print();
+    //cout << "can't recieve" << endl;
+    //g.print();
+    //cout << "###########################" << endl;
+    return false;
+}
+
 int main()
 {
+    Child c1 = Child("c1", 10);
+    Child c2 = Child("c2", 15);
+    Child c3 = Child("c3", 20);
+    Gift g1 = Gift("g1", 10, 1.1, false, 9, 11);
+    Gift g2 = Gift("g2", 10, 1.1, false, 14, 16);
+    Gift g3 = Gift("g3", 10, 1.1, true, 0, 0);
+
+    //canRecieveGift(g3, c1);
+    //canRecieveGift(g3, c2);
+    //canRecieveGift(g3, c3);
+
+    Node n1 = Node(g1,c1,{});
+    n1.print();
+    cout << "##############################" << endl;
+    Node n2 = Node(g2,c2,n1.dist);
+    n2.print();
+    cout << "##############################" << endl;
+    Node n3 = Node(g3,c3,n2.dist);
+    n3.print();
+    cout << "##############################" << endl;
+    Node n4 = Node(g1,c3,n3.dist);
+    n4.print();
+    cout << "##############################" << endl;
+
+
+
     cout << "Start\n";
     getProblem("ex1_3child_6gifts");
+    distGifts();
     cout << "End\n";
     return 0;
 }
