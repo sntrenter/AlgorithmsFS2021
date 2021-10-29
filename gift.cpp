@@ -3,6 +3,9 @@
 #include <fstream>
 #include <regex>
 #include <map>
+#include <math.h>
+#include <iomanip>
+//#include <format>
 using namespace std;
 
 class Child
@@ -125,8 +128,6 @@ void getProblem(string filename)
     }
 }
 
-
-
 bool canRecieveGift(Gift g, Child c)
 {
     //return true;
@@ -146,23 +147,65 @@ bool canRecieveGift(Gift g, Child c)
     return false;
 }
 
+double calculateE(Node n, int P, int N)
+{
+    list<double> e = {};
+    list<double>::iterator eit = e.begin();
+    for (auto c : children)
+    {
+        pair<multimap<string, Gift>::iterator, multimap<string, Gift>::iterator> ret;
+        ret = n.dist.equal_range(c.name);
+        cout << c.name << endl;
+        double eValue = 0;
+        for (multimap<string, Gift>::iterator it = ret.first; it != ret.second; ++it)
+        {
+            Gift g = it->second;
+            eValue = eValue + double(g.price);
+            cout << g.price << endl;
+        }
+        e.insert(eit, abs((double(P) / double(N)) - eValue));
+    }
+    for (auto e : e)
+    {
+        cout << setprecision(2) << e << ",";
+    }
+    cout << endl;
+    double sum = 0;
+    for (std::list<double>::iterator it = e.begin(); it != e.end(); ++it)
+    {
+        sum += *it;
+    }
+    return sum;
+}
+
 void distGifts()
 {
 
-    //for (auto c : children)
-    //{
-    //    c.print();
-    //}
+    //maxgifts = round(gifts/children) + 1
+    int maxGifts = round(gifts.size() / children.size()) + 1;
+    //mingifts = round(gifts/children) - 1
+    int minGifts = round(gifts.size() / children.size()) - 1;
+    //sum of retial price for each gift
+    int P = 0;
+    for (auto g : gifts)
+    {
+        P = P + g.price;
+    }
+    cout << P << endl;
+    //Total number of children
+    int N = children.size();
+    cout << N << endl;
+
     //Fill in first layer
     Gift firstGift = gifts.front();
     gifts.pop_front();
     for (auto c : children)
     {
-        if (canRecieveGift(firstGift,c))
+        if (canRecieveGift(firstGift, c))
         {
-            multimap<string,Gift> emptymap;
-            Node n = Node(firstGift,c,emptymap);
-            nodes.insert(nit,n);
+            multimap<string, Gift> emptymap;
+            Node n = Node(firstGift, c, emptymap);
+            nodes.insert(nit, n);
         }
     }
     //move through the rest of the layers
@@ -174,11 +217,12 @@ void distGifts()
         {
             for (auto c : children)
             {
-                if(canRecieveGift(g,c))
+                if (canRecieveGift(g, c))
                 {
-                    multimap<string,Gift> newMap = n.dist;
-                    Node n = Node(g,c,newMap);
-                    newNodes.insert(nNit,n);
+                    multimap<string, Gift> newMap = n.dist;
+                    //TODO:verify that map doesn't have too many instances of key after adding 1
+                    Node n = Node(g, c, newMap);
+                    newNodes.insert(nNit, n);
                 }
             }
         }
@@ -187,27 +231,26 @@ void distGifts()
         newNodes.clear();
         nNit = newNodes.begin();
         cout << nodes.size() << endl;
-        
     }
     //print nodes
+    //TODO:remove nodes where child doesn't have 1 large 1 medium gift
     cout << "##########" << endl;
     for (auto n : nodes)
     {
         n.print();
+        cout << setprecision(6) << calculateE(n, P, N) << endl;
         cout << "##########" << endl;
     }
-
-
 }
 
 int main()
 {
-    Child c1 = Child("c1", 10);
-    Child c2 = Child("c2", 15);
-    Child c3 = Child("c3", 20);
-    Gift g1 = Gift("g1", 10, 1.1, false, 9, 11);
-    Gift g2 = Gift("g2", 10, 1.1, false, 14, 16);
-    Gift g3 = Gift("g3", 10, 1.1, true, 0, 0);
+    //Child c1 = Child("c1", 10);
+    //Child c2 = Child("c2", 15);
+    //Child c3 = Child("c3", 20);
+    //Gift g1 = Gift("g1", 10, 1.1, false, 9, 11);
+    //Gift g2 = Gift("g2", 10, 1.1, false, 14, 16);
+    //Gift g3 = Gift("g3", 10, 1.1, true, 0, 0);
 
     //canRecieveGift(g3, c1);
     //canRecieveGift(g3, c2);
