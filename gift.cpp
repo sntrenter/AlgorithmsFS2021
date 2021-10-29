@@ -155,26 +155,27 @@ double calculateE(Node n, int P, int N)
     {
         pair<multimap<string, Gift>::iterator, multimap<string, Gift>::iterator> ret;
         ret = n.dist.equal_range(c.name);
-        cout << c.name << endl;
+        //cout << c.name << endl;
         double eValue = 0;
         for (multimap<string, Gift>::iterator it = ret.first; it != ret.second; ++it)
         {
             Gift g = it->second;
             eValue = eValue + double(g.price);
-            cout << g.price << endl;
+            //cout << g.price << endl;
         }
         e.insert(eit, abs((double(P) / double(N)) - eValue));
     }
-    for (auto e : e)
-    {
-        cout << setprecision(2) << e << ",";
-    }
-    cout << endl;
+    //for (auto e : e)
+    //{
+    //    cout << setprecision(2) << e << ",";
+    //}
+    //cout << endl;
     double sum = 0;
     for (std::list<double>::iterator it = e.begin(); it != e.end(); ++it)
     {
         sum += *it;
     }
+    //cout << setprecision(6) << sum << endl;
     return sum;
 }
 
@@ -234,13 +235,23 @@ void distGifts()
     }
     //print nodes
     //TODO:remove nodes where child doesn't have 1 large 1 medium gift
-    cout << "##########" << endl;
-    for (auto n : nodes)
+    Node lowestNode = nodes.front();
+    double lowestE = calculateE(lowestNode,P,N);
+    //cout << "##########" << endl;
+    for (auto n : nodes)//go over the first one again TODO:Fix
     {
-        n.print();
-        cout << setprecision(6) << calculateE(n, P, N) << endl;
-        cout << "##########" << endl;
+        //n.print();
+        //cout << setprecision(8) << calculateE(n, P, N) << endl;
+        //cout << "##########" << endl;
+        if(calculateE(n,P,N) < lowestE)
+        {
+            lowestNode = n;
+            lowestE = calculateE(n,P,N);
+        }
     }
+    cout << "Lowest Node:" << endl;
+    lowestNode.print();
+    cout << "Lowest E: " << lowestE << endl;
 }
 
 int main()
