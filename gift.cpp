@@ -179,6 +179,68 @@ double calculateE(Node n, int P, int N)
     return sum;
 }
 
+bool inGiftRange(Node n, int maxGifts)
+{
+    for (auto c : children)
+    {
+        //c.print();
+        pair<multimap<string, Gift>::iterator, multimap<string, Gift>::iterator> ret;
+        ret = n.dist.equal_range(c.name);
+        int numGifts = 0;
+        for (multimap<string, Gift>::iterator it = ret.first; it != ret.second; ++it)
+        {
+            Gift g = it->second;
+            numGifts = numGifts + 1;
+        }
+        if (numGifts > maxGifts)
+        {
+            cout << "Child given too many gifts!" << endl;
+            return false;
+        }
+    }
+    return true;
+}
+
+bool isNodeValid(Node n, int maxGifts, int minGifts)
+{
+    for (auto c : children)
+    {
+        c.print();
+        pair<multimap<string, Gift>::iterator, multimap<string, Gift>::iterator> ret;
+        ret = n.dist.equal_range(c.name);
+        int numGifts = 0;
+        bool large = false;
+        bool medium = false;
+        for (multimap<string, Gift>::iterator it = ret.first; it != ret.second; ++it)
+        {
+            Gift g = it->second;
+            if (g.size >= 1.0 && g.size <= 2.0)
+            {
+                medium = true;
+                cout << "medium" << endl;
+            }
+            if (g.size > 2.0)
+            {
+                large = true;
+                cout << "large" << endl;
+            }
+            numGifts = numGifts + 1;
+        }
+        cout << "numgifts: " << numGifts << endl;
+        if (large == false || medium == false)
+        {
+            cout << "didn't have both types of gifts" << endl;
+            return false;
+        }
+        if (numGifts > maxGifts || numGifts < minGifts)
+        {
+            cout << "too few gifts" << endl;
+            return false;
+        }
+    }
+    return true;
+}
+
 void distGifts()
 {
 
@@ -221,9 +283,12 @@ void distGifts()
                 if (canRecieveGift(g, c))
                 {
                     multimap<string, Gift> newMap = n.dist;
-                    //TODO:verify that map doesn't have too many instances of key after adding 1
+                    //TODO:verify that map doesn't have too many instances of key after adding 1(remove if toomanygifts() works)
                     Node n = Node(g, c, newMap);
-                    newNodes.insert(nNit, n);
+                    if (inGiftRange(n, maxGifts))
+                    {
+                        newNodes.insert(nNit, n);
+                    }
                 }
             }
         }
@@ -236,17 +301,17 @@ void distGifts()
     //print nodes
     //TODO:remove nodes where child doesn't have 1 large 1 medium gift
     Node lowestNode = nodes.front();
-    double lowestE = calculateE(lowestNode,P,N);
-    //cout << "##########" << endl;
-    for (auto n : nodes)//go over the first one again TODO:Fix
+    double lowestE = calculateE(lowestNode, P, N);
+    cout << "##########" << endl;
+    for (auto n : nodes) //go over the first one again TODO:Fix
     {
-        //n.print();
+        n.print();
         //cout << setprecision(8) << calculateE(n, P, N) << endl;
-        //cout << "##########" << endl;
-        if(calculateE(n,P,N) < lowestE)
+        cout << "##########" << endl;
+        if (isNodeValid(n, maxGifts, minGifts) && calculateE(n, P, N) < lowestE)
         {
             lowestNode = n;
-            lowestE = calculateE(n,P,N);
+            lowestE = calculateE(n, P, N);
         }
     }
     cout << "Lowest Node:" << endl;
@@ -261,24 +326,29 @@ int main()
     //Child c3 = Child("c3", 20);
     //Gift g1 = Gift("g1", 10, 1.1, false, 9, 11);
     //Gift g2 = Gift("g2", 10, 1.1, false, 14, 16);
-    //Gift g3 = Gift("g3", 10, 1.1, true, 0, 0);
-
+    //Gift g3 = Gift("g3", 10, 2.1, true, 0, 0);
+    //Gift g4 = Gift("g3", 10, 2.1, true, 0, 0);
     //canRecieveGift(g3, c1);
     //canRecieveGift(g3, c2);
     //canRecieveGift(g3, c3);
 
-    //Node n1 = Node(g1,c1,{});
+    //Node n1 = Node(g1, c1, {});
     //n1.print();
     //cout << "##############################" << endl;
-    //Node n2 = Node(g2,c2,n1.dist);
+    //Node n2 = Node(g2, c2, n1.dist);
     //n2.print();
     //cout << "##############################" << endl;
-    //Node n3 = Node(g3,c3,n2.dist);
+    //Node n3 = Node(g3, c1, n2.dist);
     //n3.print();
     //cout << "##############################" << endl;
-    //Node n4 = Node(g1,c3,n3.dist);
+    //Node n4 = Node(g4, c2, n3.dist);
     //n4.print();
     //cout << "##############################" << endl;
+    //children.insert(cit, c1);
+    //children.insert(cit, c2);
+    //children.insert(cit,c3);
+    //bool temp = inGiftRange(n4, 1);
+    //cout << boolalpha << "in gift range?: " << temp << endl;
 
     cout << "Start\n";
     getProblem("ex1_3child_6gifts");
