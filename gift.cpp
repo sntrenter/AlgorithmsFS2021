@@ -46,7 +46,7 @@ public:
         if (any)
         {
             cout << "GIFT|name:" << name << " price:" << price << " size:" << size << " ageRange:"
-                 << "any" << endl; //any<< endl;//TODO: add more stuff
+                 << "any" << endl; //any<< endl;
         }
         else
         {
@@ -131,7 +131,7 @@ void getProblem(string filename)
 bool canRecieveGift(Gift g, Child c)
 {
     //return true;
-    if (g.any || (c.age > g.ageLower && c.age < g.ageHigher))
+    if (g.any || (c.age >= g.ageLower && c.age <= g.ageHigher))
     {
         //c.print();
         //cout << "can recieve" << endl;
@@ -205,7 +205,7 @@ bool isNodeValid(Node n, int maxGifts, int minGifts)
 {
     for (auto c : children)
     {
-        c.print();
+        //c.print();
         pair<multimap<string, Gift>::iterator, multimap<string, Gift>::iterator> ret;
         ret = n.dist.equal_range(c.name);
         int numGifts = 0;
@@ -217,24 +217,24 @@ bool isNodeValid(Node n, int maxGifts, int minGifts)
             if (g.size >= 1.0 && g.size <= 2.0)
             {
                 medium = true;
-                cout << "medium" << endl;
+                //cout << "medium" << endl;
             }
             if (g.size > 2.0)
             {
                 large = true;
-                cout << "large" << endl;
+                //cout << "large" << endl;
             }
             numGifts = numGifts + 1;
         }
-        cout << "numgifts: " << numGifts << endl;
+        //cout << "numgifts: " << numGifts << endl;
         if (large == false || medium == false)
         {
-            cout << "didn't have both types of gifts" << endl;
+            //cout << "didn't have both types of gifts" << endl;
             return false;
         }
         if (numGifts > maxGifts || numGifts < minGifts)
         {
-            cout << "too few gifts" << endl;
+            //cout << "too few gifts" << endl;
             return false;
         }
     }
@@ -258,7 +258,7 @@ void distGifts()
     //Total number of children
     int N = children.size();
     cout << N << endl;
-
+    cout << "------" << endl;
     //Fill in first layer
     Gift firstGift = gifts.front();
     gifts.pop_front();
@@ -283,12 +283,11 @@ void distGifts()
                 if (canRecieveGift(g, c))
                 {
                     multimap<string, Gift> newMap = n.dist;
-                    //TODO:verify that map doesn't have too many instances of key after adding 1(remove if toomanygifts() works)
                     Node n = Node(g, c, newMap);
-                    if (inGiftRange(n, maxGifts))
-                    {
-                        newNodes.insert(nNit, n);
-                    }
+                    //if (inGiftRange(n, maxGifts))
+                    //{
+                    newNodes.insert(nNit, n);
+                    //}
                 }
             }
         }
@@ -299,20 +298,33 @@ void distGifts()
         cout << nodes.size() << endl;
     }
     //print nodes
-    //TODO:remove nodes where child doesn't have 1 large 1 medium gift
     Node lowestNode = nodes.front();
     double lowestE = calculateE(lowestNode, P, N);
     cout << "##########" << endl;
+    //DEBUG
+    list<Node> DEBUGnodes = {};
+    list<Node>::iterator DEBUGnit = DEBUGnodes.begin();
     for (auto n : nodes) //go over the first one again TODO:Fix
     {
-        n.print();
+        //n.print();
         //cout << setprecision(8) << calculateE(n, P, N) << endl;
-        cout << "##########" << endl;
+        //cout << "##########" << endl;
+        if(isNodeValid(n, maxGifts, minGifts) && calculateE(n, P, N) < 12.0)
+        {
+            DEBUGnodes.insert(DEBUGnit,n);
+        }
         if (isNodeValid(n, maxGifts, minGifts) && calculateE(n, P, N) < lowestE)
         {
             lowestNode = n;
             lowestE = calculateE(n, P, N);
         }
+    }
+    for (auto n : DEBUGnodes)
+    {
+        cout << "#######" << endl;
+        cout << setprecision(5) << calculateE(n,P,N) << endl;
+        n.print();
+        cout << "#######" << endl;
     }
     cout << "Lowest Node:" << endl;
     lowestNode.print();
@@ -351,7 +363,8 @@ int main()
     //cout << boolalpha << "in gift range?: " << temp << endl;
 
     cout << "Start\n";
-    getProblem("ex1_3child_6gifts");
+    string problem = "ex1_3child_6gifts";
+    getProblem("ex1_5child_14gifts"); //problem);
     distGifts();
     cout << "End\n";
     return 0;

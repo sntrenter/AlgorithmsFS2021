@@ -1,0 +1,21 @@
+Sum_e_i 50.199997
+Child1 G23 G37 
+Child2 G9 G30 
+Child3 G6 G16 
+Child4 G11 G35 
+Child5 G5 G14 
+Child6 G25 G40 
+Child7 G24 G28 
+Child8 G19 G27 
+Child9 G4 G12 
+Child10 G22 G36 
+Child11 G29 G33 
+Child12 G38 G39 
+Child13 G15 G34 
+Child14 G7 G31 
+Child15 G26 G32 
+Child16 G1 G21 
+Child17 G8 G18 
+Child18 G2 G13 
+Child19 G3 G20 
+Child20 G10 G17 
