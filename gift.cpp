@@ -73,12 +73,24 @@ public:
             g.print();
         }
     }
+    //bool isEqual(Node lhs)
+    //{
+    //    if(dist == lhs.dist)
+    //    {
+    //        return true;
+    //    }
+    //    return false;
+    //}
 };
 
 list<Child> children = {};
 list<Child>::iterator cit = children.begin();
 list<Gift> gifts = {};
 list<Gift>::iterator git = gifts.begin();
+
+list<Node> DebugNodes = {};
+list<Node>::iterator dnit = DebugNodes.begin();
+
 list<Node> nodes = {};
 list<Node>::iterator nit = nodes.begin();
 
@@ -272,6 +284,7 @@ void distGifts()
         }
     }
     //move through the rest of the layers
+    int i = 2;
     for (auto g : gifts)
     {
         list<Node> newNodes = {};
@@ -280,17 +293,21 @@ void distGifts()
         {
             for (auto c : children)
             {
-                if (canRecieveGift(g, c))
+                if (canRecieveGift(g, c))// || (i>8) )
                 {
                     multimap<string, Gift> newMap = n.dist;
                     Node n = Node(g, c, newMap);
                     //if (inGiftRange(n, maxGifts))
                     //{
+                    //bool found = (find(DebugNodes.begin(),DebugNodes.end(),n)!=DebugNodes.end());
+                    //if(found){ cout << "found!"<<endl;}
+
                     newNodes.insert(nNit, n);
                     //}
                 }
             }
         }
+        i++;
         nodes.swap(newNodes);
         nit = nodes.begin();
         newNodes.clear();
@@ -331,7 +348,176 @@ void distGifts()
     cout << "Lowest E: " << lowestE << endl;
 }
 
-int main()
+
+void DEBUGTEST()
+{
+    getProblem("ex1_5child_14gifts");
+    cout << "--------------------------------------------START Testing" << endl;
+    cit = children.begin();
+    Child c1 = *cit;
+    c1.print();
+    advance(cit,1);
+    Child c2 = *cit;
+    c2.print();
+    advance(cit,1);
+    Child c3 = *cit;
+    c3.print();
+    advance(cit,1);
+    Child c4 = *cit;
+    c4.print();
+    advance(cit,1);
+    Child c5 = *cit;
+    c5.print();
+    advance(cit,1);
+
+    git = gifts.begin();
+    Gift g1 = *git;
+    g1.print();
+    advance(git,1);
+    Gift g2 = *git;
+    g2.print();
+    advance(git,1);
+    Gift g3 = *git;
+    g3.print();
+    advance(git,1);
+    Gift g4 = *git;
+    g4.print();
+    advance(git,1);
+    Gift g5 = *git;
+    g5.print();
+    advance(git,1);
+    Gift g6 = *git;
+    g6.print();
+    advance(git,1);
+    Gift g7 = *git;
+    g7.print();
+    advance(git,1);
+    Gift g8 = *git;
+    g8.print();
+    advance(git,1);
+    Gift g9 = *git;
+    g9.print();
+    advance(git,1);
+    Gift g10 = *git;
+    g10.print();
+    advance(git,1);
+    Gift g11 = *git;
+    g11.print();
+    advance(git,1);
+    Gift g12 = *git;
+    g12.print();
+    advance(git,1);
+    Gift g13 = *git;
+    g13.print();
+    advance(git,1);
+    Gift g14 = *git;
+    g14.print();
+
+    cout << canRecieveGift(g7,c1) << canRecieveGift(g8,c1) << canRecieveGift(g9,c1) << endl;
+    cout << canRecieveGift(g4,c2) << canRecieveGift(g5,c2) << canRecieveGift(g12,c2) << endl;
+    cout << canRecieveGift(g10,c3) << canRecieveGift(g13,c3) << endl;
+    cout << canRecieveGift(g2,c4) << canRecieveGift(g6,c4) << canRecieveGift(g11,c4) << canRecieveGift(g14,c4) << endl;
+    cout << canRecieveGift(g1,c5) << canRecieveGift(g3,c5) <<  endl;
+    //multimap<string, Gift> emptymap;
+    //Node n = Node(g, c, newMap);
+    //multimap<string, Gift> newMap = n.dist;
+    int P = 0;
+    for (auto g : gifts)
+    {
+        P = P + g.price;
+    }
+    cout << P << endl;
+    //Total number of children
+    int N = children.size();
+    cout << N << endl;
+    cout << "------------ manual"<< endl;
+    cout << "---1" << endl;
+    multimap<string, Gift> emptymap;
+    Node n1 = Node(g1,c5,emptymap);
+    n1.print();
+    cout << "---2" << endl;
+    multimap<string, Gift> newMap = n1.dist;
+    Node n2 = Node(g2,c4,newMap);
+    n2.print();
+    cout << "---3" << endl;
+    newMap = n2.dist;
+    Node n3 = Node(g3,c5,newMap);
+    n3.print();
+    cout << "---4" << endl;
+    newMap = n3.dist;
+    Node n4 = Node(g4,c2,newMap);
+    n4.print();
+    cout << "---5" << endl;
+    newMap = n4.dist;
+    Node n5 = Node(g5,c2,newMap);
+    n5.print();
+    cout << "---6" << endl;
+    newMap = n5.dist;
+    Node n6 = Node(g6,c4,newMap);
+    n6.print();
+    cout << "---7" << endl;
+    newMap = n6.dist;
+    Node n7 = Node(g7,c1,newMap);
+    n7.print();
+    cout << "---8" << endl;
+    newMap = n7.dist;
+    Node n8 = Node(g8,c1,newMap);
+    n8.print();
+    cout << "---9" << endl;
+    newMap = n8.dist;
+    Node n9 = Node(g9,c1,newMap);
+    n9.print();
+    cout << "---10" << endl;
+    newMap = n9.dist;
+    Node n10 = Node(g10,c3,newMap);
+    n10.print();
+    cout << "---11" << endl;
+    newMap = n10.dist;
+    Node n11 = Node(g11,c4,newMap);
+    n11.print();
+    cout << "---12" << endl;
+    newMap = n11.dist;
+    Node n12 = Node(g12,c2,newMap);
+    n12.print();
+    cout << "---13" << endl;
+    newMap = n12.dist;
+    Node n13 = Node(g13,c3,newMap);
+    n13.print();
+    cout << "---14" << endl;
+    newMap = n13.dist;
+    Node n14 = Node(g14,c4,newMap);
+    n14.print();
+    
+    cout << calculateE(n14,P,N) << endl;
+
+    children.clear();
+    gifts.clear();
+    cit = children.begin();
+    git = gifts.begin();
+    cout << "--------------------------------------------END Testing" << endl;
+
+    for(auto c:children)
+    {
+        cout << "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-"<< endl;
+        c.print();
+        for(auto g : gifts)
+        {
+            g.print();
+            cout << boolalpha<< "can recieve: " <<canRecieveGift(g,c) << endl;
+        }
+    }
+    cout << "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-"<< endl;
+    DebugNodes = {n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14};
+    int maxGifts = round((double)gifts.size() / (double)children.size()) + 1;
+    //mingifts = round(gifts/children) - 1
+    int minGifts = round((double)gifts.size() / (double)children.size()) - 1;
+
+    bool x = isNodeValid(n14,maxGifts,minGifts);
+}
+
+
+
+int main(int argc, char *argv[])
 {
     //Child c1 = Child("c1", 10);
     //Child c2 = Child("c2", 15);
@@ -362,10 +548,163 @@ int main()
     //bool temp = inGiftRange(n4, 1);
     //cout << boolalpha << "in gift range?: " << temp << endl;
 
-    cout << "Start\n";
-    string problem = "ex1_3child_6gifts";
-    getProblem("ex1_5child_14gifts"); //problem);
-    distGifts();
-    cout << "End\n";
+    //cout << "There are " << argc << " arguments:\n";
+    //for (int count{ 0 }; count < argc; ++count)
+    //{
+    //    cout << count << ' ' << argv[count] << '\n';
+    //}
+
+    //TODO: get problem 5children 14gifts working
+
+    //getProblem("ex1_5child_14gifts");
+    //cout << "--------------------------------------------START Testing" << endl;
+    //cit = children.begin();
+    //Child c1 = *cit;
+    //c1.print();
+    //advance(cit,1);
+    //Child c2 = *cit;
+    //c2.print();
+    //advance(cit,1);
+    //Child c3 = *cit;
+    //c3.print();
+    //advance(cit,1);
+    //Child c4 = *cit;
+    //c4.print();
+    //advance(cit,1);
+    //Child c5 = *cit;
+    //c5.print();
+    //advance(cit,1);
+//
+    //git = gifts.begin();
+    //Gift g1 = *git;
+    //g1.print();
+    //advance(git,1);
+    //Gift g2 = *git;
+    //g2.print();
+    //advance(git,1);
+    //Gift g3 = *git;
+    //g3.print();
+    //advance(git,1);
+    //Gift g4 = *git;
+    //g4.print();
+    //advance(git,1);
+    //Gift g5 = *git;
+    //g5.print();
+    //advance(git,1);
+    //Gift g6 = *git;
+    //g6.print();
+    //advance(git,1);
+    //Gift g7 = *git;
+    //g7.print();
+    //advance(git,1);
+    //Gift g8 = *git;
+    //g8.print();
+    //advance(git,1);
+    //Gift g9 = *git;
+    //g9.print();
+    //advance(git,1);
+    //Gift g10 = *git;
+    //g10.print();
+    //advance(git,1);
+    //Gift g11 = *git;
+    //g11.print();
+    //advance(git,1);
+    //Gift g12 = *git;
+    //g12.print();
+    //advance(git,1);
+    //Gift g13 = *git;
+    //g13.print();
+    //advance(git,1);
+    //Gift g14 = *git;
+    //g14.print();
+//
+    //cout << canRecieveGift(g7,c1) << canRecieveGift(g8,c1) << canRecieveGift(g9,c1) << endl;
+    //cout << canRecieveGift(g4,c2) << canRecieveGift(g5,c2) << canRecieveGift(g12,c2) << endl;
+    //cout << canRecieveGift(g10,c3) << canRecieveGift(g13,c3) << endl;
+    //cout << canRecieveGift(g2,c4) << canRecieveGift(g6,c4) << canRecieveGift(g11,c4) << canRecieveGift(g14,c4) << endl;
+    //cout << canRecieveGift(g1,c5) << canRecieveGift(g3,c5) <<  endl;
+    ////multimap<string, Gift> emptymap;
+    ////Node n = Node(g, c, newMap);
+    ////multimap<string, Gift> newMap = n.dist;
+    //int P = 0;
+    //for (auto g : gifts)
+    //{
+    //    P = P + g.price;
+    //}
+    //cout << P << endl;
+    ////Total number of children
+    //int N = children.size();
+    //cout << N << endl;
+    //cout << "------------ manual"<< endl;
+    //cout << "---1" << endl;
+    //multimap<string, Gift> emptymap;
+    //Node n1 = Node(g1,c5,emptymap);
+    //n1.print();
+    //cout << "---2" << endl;
+    //multimap<string, Gift> newMap = n1.dist;
+    //Node n2 = Node(g2,c4,newMap);
+    //n2.print();
+    //cout << "---3" << endl;
+    //newMap = n2.dist;
+    //Node n3 = Node(g2,c5,newMap);
+    //n3.print();
+    //cout << "---4" << endl;
+    //newMap = n3.dist;
+    //Node n4 = Node(g4,c2,newMap);
+    //n4.print();
+    //cout << "---5" << endl;
+    //newMap = n4.dist;
+    //Node n5 = Node(g5,c2,newMap);
+    //n5.print();
+    //cout << "---6" << endl;
+    //newMap = n5.dist;
+    //Node n6 = Node(g6,c4,newMap);
+    //n6.print();
+    //cout << "---7" << endl;
+    //newMap = n6.dist;
+    //Node n7 = Node(g7,c1,newMap);
+    //n7.print();
+    //cout << "---8" << endl;
+    //newMap = n7.dist;
+    //Node n8 = Node(g8,c1,newMap);
+    //n8.print();
+    //cout << "---9" << endl;
+    //newMap = n8.dist;
+    //Node n9 = Node(g9,c1,newMap);
+    //n9.print();
+    //cout << "---10" << endl;
+    //newMap = n9.dist;
+    //Node n10 = Node(g10,c3,newMap);
+    //n10.print();
+    //cout << "---11" << endl;
+    //newMap = n10.dist;
+    //Node n11 = Node(g11,c4,newMap);
+    //n11.print();
+    //cout << "---12" << endl;
+    //newMap = n11.dist;
+    //Node n12 = Node(g12,c2,newMap);
+    //n12.print();
+    //cout << "---13" << endl;
+    //newMap = n12.dist;
+    //Node n13 = Node(g13,c3,newMap);
+    //n13.print();
+    //cout << "---14" << endl;
+    //newMap = n13.dist;
+    //Node n14 = Node(g14,c4,newMap);
+    //n14.print();
+    //
+    //cout << calculateE(n14,P,N) << endl;
+//
+    //cit = children.begin();
+    //git = gifts.begin();
+    //cout << "--------------------------------------------END Testing" << endl;
+    
+    DEBUGTEST();
+
+    //cout << "Start\n";
+    //string problem = "ex1_3child_6gifts";
+    //getProblem("ex1_5child_14gifts"); //problem);
+    //distGifts();
+    //cout << "End\n";
     return 0;
 }
