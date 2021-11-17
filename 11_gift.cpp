@@ -5,11 +5,11 @@
 #include <map>
 #include <math.h>
 #include <iomanip>
-#include <string.h> 
+#include <string.h>
 
 using namespace std;
 
-// make;./gifting examples/ex1_3child_6gifts.txt examples/ex1_3child_6gifts.sol 3 6
+// make;./gifting examples/ex1_3child_6gifts.txt writeme.sol 3 6
 
 class Child
 {
@@ -102,10 +102,10 @@ void getProblem(string filename, int numChild, int numGift)
         Child c = Child(childName, childAge);
         children.insert(cit, c);
     }
-     inputFile >> tempStrng;
-     inputFile >> tempStrng;
-     inputFile >> tempStrng;
-     inputFile >> tempStrng;
+    inputFile >> tempStrng;
+    inputFile >> tempStrng;
+    inputFile >> tempStrng;
+    inputFile >> tempStrng;
     //gift BS
     for (int i = 0; i < numGift; i++)
     {
@@ -118,14 +118,14 @@ void getProblem(string filename, int numChild, int numGift)
         int ageLower;
         int ageHigher;
 
-        inputFile >> name; // read in gift ID
-        inputFile >> price;   // read in price
-        inputFile >> size;    // read in size
+        inputFile >> name;  // read in gift ID
+        inputFile >> price; // read in price
+        inputFile >> size;  // read in size
 
         // read in suitable ages
         inputFile >> tempStrng;
         if (tempStrng == "any")
-        {                           // suitable for any age
+        { // suitable for any age
             //suitableAges[i][0] = 0; // designate age range as 0 to 21
             //suitableAges[i][1] = 21;
             any = true;
@@ -141,7 +141,7 @@ void getProblem(string filename, int numChild, int numGift)
             {
 
             case 3:
-            {                                                // both ages are single digit
+            {                                      // both ages are single digit
                 ageLower = (int)tempStrng[0] - 48; // subtract 30 from ASCII value to get correct int
                 ageHigher = (int)tempStrng[2] - 48;
                 break;
@@ -177,9 +177,8 @@ void getProblem(string filename, int numChild, int numGift)
             }
             }
         }
-        Gift g = Gift(name,price,size,any,ageLower,ageHigher);
-        gifts.insert(git,g);
-
+        Gift g = Gift(name, price, size, any, ageLower, ageHigher);
+        gifts.insert(git, g);
     }
 
     //
@@ -194,8 +193,8 @@ void getProblem(string filename, int numChild, int numGift)
     {
         g.print();
     }
+    inputFile.close();
 }
-
 
 bool canRecieveGift(Gift g, Child c)
 {
@@ -310,7 +309,29 @@ bool isNodeValid(Node n, int maxGifts, int minGifts)
     return true;
 }
 
-void distGifts()
+void saveNode(Node n, double e, string filename)
+{
+    ofstream writefile;
+    writefile.open(filename);
+    //writefile << "test \n";
+    writefile << "Sum_e_i "<< e;
+    string name = "";
+    for (auto itr = n.dist.begin(); itr != n.dist.end(); itr++)
+    {
+        if(itr -> first != name)
+        {
+            name = itr -> first;
+            //cout << itr -> first << " ";
+            writefile << "\n" << itr -> first;
+        }
+        //cout << itr -> second.name << " ";
+        writefile << " " << itr -> second.name;
+    }
+
+    writefile.close();
+}
+
+void distGifts(string writeFile)
 {
 
     //maxgifts = round(gifts/children) + 1
@@ -350,7 +371,7 @@ void distGifts()
         {
             for (auto c : children)
             {
-                if (canRecieveGift(g, c))// || (i>8) )
+                if (canRecieveGift(g, c)) // || (i>8) )
                 {
                     multimap<string, Gift> newMap = n.dist;
                     Node n = Node(g, c, newMap);
@@ -383,9 +404,9 @@ void distGifts()
         //n.print();
         //cout << setprecision(8) << calculateE(n, P, N) << endl;
         //cout << "##########" << endl;
-        if(isNodeValid(n, maxGifts, minGifts) && calculateE(n, P, N) < 12.0)
+        if (isNodeValid(n, maxGifts, minGifts) && calculateE(n, P, N) < 12.0)
         {
-            DEBUGnodes.insert(DEBUGnit,n);
+            DEBUGnodes.insert(DEBUGnit, n);
         }
         if (isNodeValid(n, maxGifts, minGifts) && calculateE(n, P, N) < lowestE)
         {
@@ -396,16 +417,33 @@ void distGifts()
     for (auto n : DEBUGnodes)
     {
         cout << "#######" << endl;
-        cout << setprecision(5) << calculateE(n,P,N) << endl;
+        cout << setprecision(5) << calculateE(n, P, N) << endl;
         n.print();
         cout << "#######" << endl;
     }
     cout << "Lowest Node:" << endl;
     lowestNode.print();
     cout << "Lowest E: " << lowestE << endl;
+    saveNode(lowestNode, lowestE, writeFile);
 }
 
-
-
-
 int main(int argc, char *argv[])
+{
+
+    cout << "There are " << argc << " arguments:\n";
+    for (int count{0}; count < argc; ++count)
+    {
+        cout << count << ' ' << argv[count] << '\n';
+    }
+    cout << "Start\n";
+    //string problem = "ex1_5child_6gifts";
+    string filename = argv[1];
+    string writeFile = argv[2];
+    int numChild = stoi(argv[3]);
+    int numGift = stoi(argv[4]);
+    getProblem(filename, numChild, numGift); //problem);
+    distGifts(writeFile);
+    cout << "End\n";
+    return 0;
+}
+
