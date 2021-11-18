@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <list>
 #include <fstream>
@@ -5,8 +6,11 @@
 #include <map>
 #include <math.h>
 #include <iomanip>
-//#include <format>
+#include <string.h>
+
 using namespace std;
+
+// make;./gifting examples/ex1_3child_6gifts.txt writeme.sol 3 6
 
 class Child
 {
@@ -61,7 +65,7 @@ public:
     Node(Gift g, Child c, multimap<string, Gift> prev)
     {
         dist = prev;
-        dist.insert({c.name, g});
+        dist.insert(pair<string, Gift>(c.name, g));
     }
     void print()
     {
@@ -75,48 +79,111 @@ public:
     }
 };
 
-
-list<Child> children = {};
+list<Child> children;
 list<Child>::iterator cit = children.begin();
-list<Gift> gifts = {};
+list<Gift> gifts;
 list<Gift>::iterator git = gifts.begin();
-list<Node> nodes = {};
+list<Node> nodes;
 list<Node>::iterator nit = nodes.begin();
 
-void getProblem(string filename)
+void getProblem(string filename, int numChild, int numGift)
 {
-    ifstream file;
-    regex crgx("(Child[0-9]+)	age	([0-9]+)");
-    regex grgx("(G[0-9]+)	([0-9]+)	([0-9]+.[0-9]+)	([0-9]+-[0-9]+|any)");
-    regex ageRangergx("([0-9]+)-([0-9]+)");
-    smatch match;
-    smatch match2;
+    ifstream inputFile;
 
-    cout << filename << "\n";
-    filename = "examples/" + filename + ".txt";
-    file.open(filename.c_str());
-    string lntxt;
-    while (getline(file, lntxt))
-    {
-        cout << lntxt << endl;
-        if (regex_search(lntxt, match, crgx))
-        {
-            children.insert(cit, Child(match[1], stoi(match[2])));
-        }
-        if (regex_search(lntxt, match, grgx))
-        {
-            if (match[4].str() == "any")
-            {
-                gifts.insert(git, Gift(match[1], stoi(match[2]), stod(match[3]), true, 0, 0));
-            }
-            else
-            {
-                string ageRange = match[4].str();
-                regex_search(ageRange, match2, ageRangergx);
-                gifts.insert(git, Gift(match[1], stoi(match[2]), stod(match[3]), false, stoi(match2[1]), stoi(match2[2])));
-            }
-        }
+    inputFile.open(filename);
+    string tempStrng;
+    for (int i = 0; i < numChild; i++)
+    { // read in numchild rows
+        string tempString;
+        string childName;
+        int childAge;
+        inputFile >> childName;  // child IDs in first column
+        inputFile >> tempString; // throw away second column
+        inputFile >> childAge;   // child ages in third column
+        Child c = Child(childName, childAge);
+        children.insert(cit, c);
     }
+    inputFile >> tempStrng;
+    inputFile >> tempStrng;
+    inputFile >> tempStrng;
+    inputFile >> tempStrng;
+    //gift BS
+    for (int i = 0; i < numGift; i++)
+    {
+        string tempStrng;
+        int tempInt;
+        string name;
+        int price;
+        double size;
+        bool any = false;
+        int ageLower;
+        int ageHigher;
+
+        inputFile >> name;  // read in gift ID
+        inputFile >> price; // read in price
+        inputFile >> size;  // read in size
+
+        // read in suitable ages
+        inputFile >> tempStrng;
+        if (tempStrng == "any")
+        { // suitable for any age
+            //suitableAges[i][0] = 0; // designate age range as 0 to 21
+            //suitableAges[i][1] = 21;
+            any = true;
+        }
+        else
+        {
+            // determine if ages are single or double digits
+            int numChars = 0; // count number of chars in string
+            while (tempStrng[numChars] != '\0')
+                numChars++;
+
+            switch (numChars)
+            {
+
+            case 3:
+            {                                      // both ages are single digit
+                ageLower = (int)tempStrng[0] - 48; // subtract 30 from ASCII value to get correct int
+                ageHigher = (int)tempStrng[2] - 48;
+                break;
+            }
+
+            case 4:
+            { // first age single digit, second is double digit
+                ageLower = (int)tempStrng[0] - 48;
+                tempInt = (int)tempStrng[2] - 48; // first digit of second age
+                tempInt *= 10;
+                tempInt += (int)tempStrng[3] - 48; // convert to double digit age
+                ageHigher = tempInt;
+                break;
+            }
+
+            case 5:
+            {                                     // both ages are double digit
+                tempInt = (int)tempStrng[0] - 48; // first digit of first age
+                tempInt *= 10;
+                tempInt += (int)tempStrng[1] - 48; // convert to double digit age
+                ageLower = tempInt;
+
+                tempInt = (int)tempStrng[3] - 48; // first digit of second age
+                tempInt *= 10;
+                tempInt += (int)tempStrng[4] - 48; // convert to double digit age
+                ageHigher = tempInt;
+                break;
+            }
+
+            default:
+            {
+                cout << numChars << " chars" << endl;
+            }
+            }
+        }
+        Gift g = Gift(name, price, size, any, ageLower, ageHigher);
+        gifts.insert(git, g);
+    }
+
+    //
+
     cout << "CHILDREN:" << endl;
     for (auto c : children)
     {
@@ -127,6 +194,26 @@ void getProblem(string filename)
     {
         g.print();
     }
+    inputFile.close();
+}
+
+bool canRecieveGift(Gift g, Child c)
+{
+    //return true;
+    if (g.any || (c.age >= g.ageLower && c.age <= g.ageHigher))
+    {
+        //c.print();
+        //cout << "can recieve" << endl;
+        //g.print();
+        //cout << "###########################" << endl;
+        return true;
+    }
+
+    //c.print();
+    //cout << "can't recieve" << endl;
+    //g.print();
+    //cout << "###########################" << endl;
+    return false;
 }
 
 double calculateE(Node n, int P, int N)
@@ -159,6 +246,28 @@ double calculateE(Node n, int P, int N)
     }
     //cout << setprecision(6) << sum << endl;
     return sum;
+}
+
+bool inGiftRange(Node n, int maxGifts)
+{
+    for (auto c : children)
+    {
+        //c.print();
+        pair<multimap<string, Gift>::iterator, multimap<string, Gift>::iterator> ret;
+        ret = n.dist.equal_range(c.name);
+        int numGifts = 0;
+        for (multimap<string, Gift>::iterator it = ret.first; it != ret.second; ++it)
+        {
+            Gift g = it->second;
+            numGifts = numGifts + 1;
+        }
+        if (numGifts > maxGifts)
+        {
+            cout << "Child given too many gifts!" << endl;
+            return false;
+        }
+    }
+    return true;
 }
 
 bool isNodeValid(Node n, int maxGifts, int minGifts)
@@ -201,22 +310,30 @@ bool isNodeValid(Node n, int maxGifts, int minGifts)
     return true;
 }
 
-bool canRecieveGift(Gift g, Child c)
+void saveNode(Node n, double e, string filename)
 {
-    if (g.any)
+    ofstream writefile;
+    writefile.open(filename);
+    //writefile << "test \n";
+    writefile << "Sum_e_i " << e;
+    string name = "";
+    for (auto itr = n.dist.begin(); itr != n.dist.end(); itr++)
     {
-        return true;
-    }
-    if(c.age >= g.ageLower && c.age <= g.ageHigher)
-    {
-        return true;
+        if (itr->first != name)
+        {
+            name = itr->first;
+            //cout << itr -> first << " ";
+            writefile << "\n"
+                      << itr->first;
+        }
+        //cout << itr -> second.name << " ";
+        writefile << " " << itr->second.name;
     }
 
-    return false;
+    writefile.close();
 }
 
-
-void distGifts()
+void distGifts(string writeFile)
 {
 
     //maxgifts = round(gifts/children) + 1
@@ -252,49 +369,20 @@ void distGifts()
     {
         list<Node> newNodes = {};
         list<Node>::iterator nNit = newNodes.begin();
-        int debugNi = 0;
-        int debugNewNodesAdded = 0;
         for (auto n : nodes)
         {
-            //if(debugNi == 176)//Debug,gift 8
-            //{
-            //    cout<<"at moment"<<endl;
-            //}
-            if(i==10&&debugNi==880)//i == 9 && debugNi == 880)
-            {
-                cout<<"at correctNode!"<<endl;
-            }
-            if(i==11&&debugNi == 2640)
-            {
-                cout<<"at correct node layer 11"<<endl;
-            }
-            if(i == 12&&debugNi==7921)
-            {
-                cout<<"at correct node layer 12"<<endl;
-            }
-            if(i == 13&&debugNi==39606)
-            {
-                cout<<"at correct node layer 13"<<endl;
-            }
-            if(i == 14&&debugNi==198032)
-            {
-                cout<<"at correct node layer 14"<<endl;
-            }
             for (auto c : children)
             {
-                if(i == 7 && c.name == "Child1")//debug
-                {
-                    cout<<"";
-                }
-                if ( canRecieveGift(g, c) )
+                if (canRecieveGift(g, c)) // || (i>8) )
                 {
                     multimap<string, Gift> newMap = n.dist;
-                    Node newNode = Node(g, c, newMap);
-                    newNodes.insert(nNit, newNode);
-                    debugNewNodesAdded++;
+                    Node n = Node(g, c, newMap);
+                    //if (inGiftRange(n, maxGifts))
+                    //{
+                    newNodes.insert(nNit, n);
+                    //}
                 }
             }
-            debugNi++;
         }
         i++;
         nodes.swap(newNodes);
@@ -310,59 +398,57 @@ void distGifts()
     //DEBUG
     list<Node> DEBUGnodes = {};
     list<Node>::iterator DEBUGnit = DEBUGnodes.begin();
-    int lownode = 0;
+    //int lownode = 0;
     for (auto n : nodes) //go over the first one again TODO:Fix
     {
-        if(lownode==594097)
-        {
-            cout << "should be at proper node" << endl;
-        }
+        //if(lownode==594097)
+        //{
+        //    cout << "should be at proper node" << endl;
+        //    n.print();
+        //}
         //n.print();
         //cout << setprecision(8) << calculateE(n, P, N) << endl;
         //cout << "##########" << endl;
-        //if(isNodeValid(n, maxGifts, minGifts) && calculateE(n, P, N))// < 12.0)
+        //bool x = isNodeValid(n, maxGifts, minGifts);
+        //bool y = calculateE(n, P, N) < lowestE;
+        //if (isNodeValid(n, maxGifts, minGifts) && calculateE(n, P, N) < 10.0)//TODO:remove debug
         //{
-        //    DEBUGnodes.insert(DEBUGnit,n);
+        //    DEBUGnodes.insert(DEBUGnit, n);
         //}
-        bool x = isNodeValid(n, maxGifts, minGifts);
-        bool y = calculateE(n, P, N) < lowestE;
         if (isNodeValid(n, maxGifts, minGifts) && calculateE(n, P, N) < lowestE)
         {
             lowestNode = n;
             lowestE = calculateE(n, P, N);
         }
-        lownode++;
     }
     //for (auto n : DEBUGnodes)
     //{
     //    cout << "#######" << endl;
-    //    cout << setprecision(5) << calculateE(n,P,N) << endl;
+    //    cout << setprecision(5) << calculateE(n, P, N) << endl;
     //    n.print();
     //    cout << "#######" << endl;
     //}
     cout << "Lowest Node:" << endl;
     lowestNode.print();
     cout << "Lowest E: " << lowestE << endl;
+    saveNode(lowestNode, lowestE, writeFile);
 }
-
-
-
 
 int main(int argc, char *argv[])
 {
 
     cout << "There are " << argc << " arguments:\n";
-    for (int count{ 0 }; count < argc; ++count)
+    for (int count{0}; count < argc; ++count)
     {
         cout << count << ' ' << argv[count] << '\n';
     }
-
-
-
     cout << "Start\n";
-    string problem = "ex1_5child_6gifts";
-    getProblem("ex1_5child_14gifts"); //problem);
-    distGifts();
+    string filename = argv[1];
+    string writeFile = argv[2];
+    int numChild = stoi(argv[3]);
+    int numGift = stoi(argv[4]);
+    getProblem(filename, numChild, numGift);
+    distGifts(writeFile);
     cout << "End\n";
     return 0;
 }

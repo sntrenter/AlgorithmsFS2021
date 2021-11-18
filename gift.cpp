@@ -699,12 +699,12 @@ int main(int argc, char *argv[])
     //git = gifts.begin();
     //cout << "--------------------------------------------END Testing" << endl;
     
-    DEBUGTEST();
+    //DEBUGTEST();
 
     //cout << "Start\n";
     //string problem = "ex1_3child_6gifts";
-    //getProblem("ex1_5child_14gifts"); //problem);
-    //distGifts();
+    getProblem("ex1_5child_14gifts"); //problem);
+    distGifts();
     //cout << "End\n";
     return 0;
 }
