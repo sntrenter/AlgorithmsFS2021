@@ -424,14 +424,14 @@ int main(int argc, char *argv[])
         cout << count << ' ' << argv[count] << '\n';
     }
     cout << "Start\n";
-    string filename = "examples/ex1_3child_6gifts.txt";
-    string writeFile = "writefile";
-    int numChild = 3;
-    int numGift = 6;
-    //string filename = argv[1];
-    //string writeFile = argv[2];
-    //int numChild = stoi(argv[3]);
-    //int numGift = stoi(argv[4]);
+    //string filename = "examples/ex1_3child_6gifts.txt";
+    //string writeFile = "writefile";
+    //int numChild = 3;
+    //int numGift = 6;
+    string filename = argv[1];
+    string writeFile = argv[2];
+    int numChild = stoi(argv[3]);
+    int numGift = stoi(argv[4]);
     getProblem(filename, numChild, numGift);
     distGifts(writeFile);
     cout << "End\n";
