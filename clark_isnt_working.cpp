@@ -1,4 +1,10 @@
-
+//Sam Trenter
+//Algorithms FS2020
+//Makefile is not mine but used with permission
+//
+//I use "trees" to reduce the number of nodes I have to test, at the cost of memory
+//example of how to run:
+// make;./gifting examples/ex1_3child_6gifts.txt writeme.sol 3 6
 #include <iostream>
 #include <list>
 #include <fstream>
@@ -10,7 +16,7 @@
 
 using namespace std;
 
-// make;./gifting examples/ex1_3child_6gifts.txt writeme.sol 3 6
+
 
 class Child
 {
@@ -88,6 +94,7 @@ list<Node>::iterator nit = nodes.begin();
 
 void getProblem(string filename, int numChild, int numGift)
 {
+    /* Def: Reads problem into children and gifts globals*/
     ifstream inputFile;
 
     inputFile.open(filename);
@@ -181,9 +188,6 @@ void getProblem(string filename, int numChild, int numGift)
         Gift g = Gift(name, price, size, any, ageLower, ageHigher);
         gifts.insert(git, g);
     }
-
-    //
-
     cout << "CHILDREN:" << endl;
     for (auto c : children)
     {
@@ -199,60 +203,44 @@ void getProblem(string filename, int numChild, int numGift)
 
 bool canRecieveGift(Gift g, Child c)
 {
-    //return true;
+    /* Def: Checks if a child c is eligable to recive gift g*/
     if (g.any || (c.age >= g.ageLower && c.age <= g.ageHigher))
     {
-        //c.print();
-        //cout << "can recieve" << endl;
-        //g.print();
-        //cout << "###########################" << endl;
         return true;
     }
-
-    //c.print();
-    //cout << "can't recieve" << endl;
-    //g.print();
-    //cout << "###########################" << endl;
     return false;
 }
 
 double calculateE(Node n, int P, int N)
 {
+    /* Def: Calculates a nodes e value with a given P and N value*/
     list<double> e = {};
     list<double>::iterator eit = e.begin();
     for (auto c : children)
     {
         pair<multimap<string, Gift>::iterator, multimap<string, Gift>::iterator> ret;
         ret = n.dist.equal_range(c.name);
-        //cout << c.name << endl;
         double eValue = 0;
         for (multimap<string, Gift>::iterator it = ret.first; it != ret.second; ++it)
         {
             Gift g = it->second;
             eValue = eValue + double(g.price);
-            //cout << g.price << endl;
         }
         e.insert(eit, abs((double(P) / double(N)) - eValue));
     }
-    //for (auto e : e)
-    //{
-    //    cout << setprecision(2) << e << ",";
-    //}
-    //cout << endl;
     double sum = 0;
     for (std::list<double>::iterator it = e.begin(); it != e.end(); ++it)
     {
         sum += *it;
     }
-    //cout << setprecision(6) << sum << endl;
     return sum;
 }
 
 bool inGiftRange(Node n, int maxGifts)
 {
+    /* Def: does node n have a child with too many gifts?*/
     for (auto c : children)
     {
-        //c.print();
         pair<multimap<string, Gift>::iterator, multimap<string, Gift>::iterator> ret;
         ret = n.dist.equal_range(c.name);
         int numGifts = 0;
@@ -272,9 +260,12 @@ bool inGiftRange(Node n, int maxGifts)
 
 bool isNodeValid(Node n, int maxGifts, int minGifts)
 {
+    /* 
+        Def: Checks if a node is valid, we already check that eachchild can recieve gift so we 
+        don't need to do it here
+    */
     for (auto c : children)
     {
-        //c.print();
         pair<multimap<string, Gift>::iterator, multimap<string, Gift>::iterator> ret;
         ret = n.dist.equal_range(c.name);
         int numGifts = 0;
@@ -286,24 +277,19 @@ bool isNodeValid(Node n, int maxGifts, int minGifts)
             if (g.size >= 1.0 && g.size <= 2.0)
             {
                 medium = true;
-                //cout << "medium" << endl;
             }
             if (g.size > 2.0)
             {
                 large = true;
-                //cout << "large" << endl;
             }
             numGifts = numGifts + 1;
         }
-        //cout << "numgifts: " << numGifts << endl;
         if (large == false || medium == false)
         {
-            //cout << "didn't have both types of gifts" << endl;
             return false;
         }
         if (numGifts > maxGifts || numGifts < minGifts)
         {
-            //cout << "too few gifts" << endl;
             return false;
         }
     }
@@ -312,9 +298,9 @@ bool isNodeValid(Node n, int maxGifts, int minGifts)
 
 void saveNode(Node n, double e, string filename)
 {
+    /* Def: Saves node n with it's e value in the given filename*/
     ofstream writefile;
     writefile.open(filename);
-    //writefile << "test \n";
     writefile << "Sum_e_i " << e;
     string name = "";
     for (auto itr = n.dist.begin(); itr != n.dist.end(); itr++)
@@ -322,11 +308,9 @@ void saveNode(Node n, double e, string filename)
         if (itr->first != name)
         {
             name = itr->first;
-            //cout << itr -> first << " ";
             writefile << "\n"
                       << itr->first;
         }
-        //cout << itr -> second.name << " ";
         writefile << " " << itr->second.name;
     }
 
@@ -335,6 +319,11 @@ void saveNode(Node n, double e, string filename)
 
 void distGifts(string writeFile)
 {
+    /* 
+        Def: "meat and potatos of out algorithm, uses children,gifts, and nodes
+        to create layers of our tree. Then it will find the node in the last layer 
+        with the lowest e value.
+    */
 
     //maxgifts = round(gifts/children) + 1
     int maxGifts = round((double)gifts.size() / (double)children.size()) + 1;
@@ -346,10 +335,11 @@ void distGifts(string writeFile)
     {
         P = P + g.price;
     }
-    cout << P << endl;
+    cout << "------" << endl;
+    cout <<"sum of retial price for each gift P: "<< P << endl;
     //Total number of children
     int N = children.size();
-    cout << N << endl;
+    cout << "Total number of children N: " << N << endl;
     cout << "------" << endl;
     //Fill in first layer
     Gift firstGift = gifts.front();
@@ -363,6 +353,8 @@ void distGifts(string writeFile)
             nodes.insert(nit, n);
         }
     }
+    cout << "Size of the Nodes:" << endl;
+    cout << nodes.size() << endl;
     //move through the rest of the layers
     int i = 2;
     for (auto g : gifts)
@@ -391,43 +383,18 @@ void distGifts(string writeFile)
         nNit = newNodes.begin();
         cout << nodes.size() << endl;
     }
-    //print nodes
+    cout << "------" << endl;
+
     Node lowestNode = nodes.front();
     double lowestE = calculateE(lowestNode, P, N);
-    cout << "##########" << endl;
-    //DEBUG
-    list<Node> DEBUGnodes = {};
-    list<Node>::iterator DEBUGnit = DEBUGnodes.begin();
-    //int lownode = 0;
-    for (auto n : nodes) //go over the first one again TODO:Fix
+    for (auto n : nodes) 
     {
-        //if(lownode==594097)
-        //{
-        //    cout << "should be at proper node" << endl;
-        //    n.print();
-        //}
-        //n.print();
-        //cout << setprecision(8) << calculateE(n, P, N) << endl;
-        //cout << "##########" << endl;
-        //bool x = isNodeValid(n, maxGifts, minGifts);
-        //bool y = calculateE(n, P, N) < lowestE;
-        //if (isNodeValid(n, maxGifts, minGifts) && calculateE(n, P, N) < 10.0)//TODO:remove debug
-        //{
-        //    DEBUGnodes.insert(DEBUGnit, n);
-        //}
         if (isNodeValid(n, maxGifts, minGifts) && calculateE(n, P, N) < lowestE)
         {
             lowestNode = n;
             lowestE = calculateE(n, P, N);
         }
     }
-    //for (auto n : DEBUGnodes)
-    //{
-    //    cout << "#######" << endl;
-    //    cout << setprecision(5) << calculateE(n, P, N) << endl;
-    //    n.print();
-    //    cout << "#######" << endl;
-    //}
     cout << "Lowest Node:" << endl;
     lowestNode.print();
     cout << "Lowest E: " << lowestE << endl;
@@ -443,10 +410,11 @@ int main(int argc, char *argv[])
         cout << count << ' ' << argv[count] << '\n';
     }
     cout << "Start\n";
-    string filename = argv[1];
-    string writeFile = argv[2];
-    int numChild = stoi(argv[3]);
-    int numGift = stoi(argv[4]);
+    string filename = "examples/ex1_3child_6gifts.txt";
+    string writeFile = "writefile";
+    int numChild = 3;
+    int numGift = 6;
+
     getProblem(filename, numChild, numGift);
     distGifts(writeFile);
     cout << "End\n";
