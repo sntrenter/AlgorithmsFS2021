@@ -1,0 +1,63 @@
+Child1	age	6
+Child2	age	10
+Child3	age	13
+Child4	age	7
+Child5	age	13
+Child6	age	11
+Child7	age	1
+Child8	age	14
+Child9	age	16
+Child10	age	8
+Child11	age	10
+Child12	age	4
+Child13	age	14
+Child14	age	7
+Child15	age	7
+Child16	age	2
+Child17	age	5
+Child18	age	1
+Child19	age	12
+Child20	age	7
+
+Gifts	Price	Size	Ages
+
+G1	23	2.6	0-3
+G2	22	1.6	0-2
+G3	25	3.1	any
+G4	25	1.2	any
+G5	24	2.9	any
+G6	18	1.6	9-14
+G7	24	3.4	any
+G8	18	1.4	2-12
+G9	15	1.0	5-13
+G10	29	2.0	0-8
+G11	14	1.9	6-8
+G12	1	2.9	any
+G13	10	2.7	any
+G14	7	1.4	any
+G15	12	2.1	9-17
+G16	18	2.2	any
+G17	2	3.5	5-10
+G18	20	2.8	0-5
+G19	11	3.0	11-17
+G20	6	1.2	8-12
+G21	9	1.5	0-4
+G22	23	2.8	8-15
+G23	18	1.0	3-8
+G24	13	1.4	any
+G25	12	1.6	9-11
+G26	19	2.5	6-8
+G27	22	1.9	14-17
+G28	23	3.2	0-1
+G29	5	1.8	10-16
+G30	19	2.9	9-15
+G31	7	1.1	any
+G32	20	1.7	any
+G33	30	3.4	8-12
+G34	21	1.7	any
+G35	21	2.4	5-10
+G36	10	1.9	5-9
+G37	17	2.9	1-6
+G38	4	2.1	any
+G39	22	1.8	2-4
+G40	23	2.6	11-14
