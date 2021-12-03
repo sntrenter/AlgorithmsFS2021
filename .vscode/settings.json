@@ -46,6 +46,20 @@
         "stdexcept": "cpp",
         "streambuf": "cpp",
         "typeinfo": "cpp",
-        "iomanip": "cpp"
-    }
+        "iomanip": "cpp",
+        "chrono": "cpp"
+    },
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": false,
+    "editor.tokenColorCustomizations": {
+        "textMateRules": [
+          {
+            "scope": "meta.function-call.generic.python",
+            "settings": {
+              "foreground": "#DCDCAA"
+            }
+          }
+        ]
+      },
+    
 }

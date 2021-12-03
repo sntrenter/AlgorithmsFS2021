@@ -1,0 +1,12 @@
+Child1	age	2
+Child2	age	10
+Child3	age	16
+
+Gifts	Price	Size	Ages
+
+G1      19      3.4     12-19
+G2      1       3.1     1-5
+G4      24      1.4     6-11
+G6      1       2.9     9-13
+G3      10      2.0     any
+G5      22      1.7     any
